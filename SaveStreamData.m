@@ -29,6 +29,7 @@ function varargout = SaveStreamData(fn,varargin)
 %
 % See the function 'Test' below for an example.
 
+% test
   [varargout{1:nargout}] = feval(fn,varargin{:});
   
 function ssd = Init(fn,varargin)
