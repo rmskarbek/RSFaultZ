@@ -1,4 +1,6 @@
-Out = SimData2;
+function BasicMovie(Out)
+
+%Out = SimData2;
 FaultLength = Out.Params.Geometry.FaultLength;
 N = Out.Params.Geometry.GridPoints;
 N_t = numel(Out.Output.Time);
@@ -7,7 +9,7 @@ Z = Out.Params.Geometry.Depth;
 
 X = Z./tan(pi*beta/180);
 
-frames = 1960;
+frames = floor(N_t/10);
 F(frames) = struct('cdata',[],'colormap',[]);
 
 Vel = Out.Output.Vel;
