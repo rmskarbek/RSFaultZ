@@ -3,4 +3,6 @@ RSFaultZ is a MATLAB app for performing quasi-dynamic rupture simulations using 
 
 To start the app, type >> RSFaultZ in the MATLAB command window.
 
+RSFaultZ requires the hm-toolbox to run simulations: https://github.com/numpi/hm-toolbox
+
 [![DOI](https://zenodo.org/badge/499196046.svg)](https://zenodo.org/badge/latestdoi/499196046)
