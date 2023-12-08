@@ -1,5 +1,5 @@
 function Out_S = StabilityAnalysis(p, calc, geom)
-%%% This is the dimensionless version.
+%%% This function carries out numerical linear stability analysis. 
 
 %%% Geometry case.
 if strcmp(geom, 'Thrust Fault')
@@ -28,10 +28,10 @@ mu = p.Friction.mu_ref;
 L_b = p.Friction.L_b;
 
 switch geometry
-%%% geometry-specific parameters. need different cases for thrust and
-%%% normal faults.
+%%% geometry-specific parameters.
 %%% See notes on p.65 in Bienfang1 for half-space equations.    
     case 'halfspace'
+%%% These are HODLR matrices, but will convert to dense matrices on LINE 55.        
         K_s = (1/(2*pi))*p.Geometry.ShearKernel;
         K_n = sign*(1/(2*pi))*p.Geometry.NormalKernel;
 
@@ -63,8 +63,8 @@ A_lr = -I;
 A = [A_ul A_ur; A_ll A_lr];
 
 switch calc
+%%% Get all the eigenvalues and eigenvectors.    
     case 'full'
-%%% Get all the eigenvalues and eigenvectors.
         [V, D] = eig(A);
         lambda = diag(D);
 %%% Compute determinant and trace of the Jacobian.
@@ -72,62 +72,64 @@ switch calc
         De = det(A);
 %%% The eigenvalues are sets of complex conjugates. Look at the
 %%% eigenvalues with positive imaginary parts, and exclude the eigenvalue
-%%% lambda = 0. WHAT INFO IS BEING DISCARDED HERE?
-rr = imag(lambda) > 0 & abs(lambda) > 1e-15;
-l_pos = lambda(rr);
+%%% abs(lambda) = 0.
+        rr = imag(lambda) > 0 & abs(lambda) > 1e-15;
+        l_pos = lambda(rr);
 %%% Get corresponding eigenvectors.
-V_pos = V(:, rr);
+        V_pos = V(:, rr);
 
 %%% Determine if any eigenvalues have positive real parts.
-if sum(real(l_pos) > 0) > 0
+        if sum(real(l_pos) > 0) > 0
 
 %%% Find the first eigenvalue and vector to cross the imaginary axis.
-    jj = real(l_pos) == min(real(l_pos(real(l_pos)>0)));
-    lambda_1 = l_pos(jj);
-    vector_1 = V_pos(1:N, jj);
+            jj = real(l_pos) == min(real(l_pos(real(l_pos)>0)));
+            lambda_1 = l_pos(jj);
+            vector_1 = V_pos(1:N, jj);
 
 %%% The wavelength(s) of this eigenvector are the critical wavelength(s).
-    [~, kk] = findpeaks(real(vector_1));
-    H = diff(Xi(kk));
+            [~, kk] = findpeaks(real(vector_1));
+            H = diff(Xi(kk));
 
 %%% Get the along fault location and depths of the wavelengths. The
 %%% location of each wavelength measurement is taken at the midpoint
 %%% between successive peaks.
-    Xi_kk = Xi(kk(1:end-1)) + H/2;
+            Xi_kk = Xi(kk(1:end-1)) + H/2;
 
-    switch geometry
-        case 'halfspace'
+            switch geometry
+                case 'halfspace'
 %%% The depths are stored in p. Corresponding indices for Xi_kk would need
-%%% to be computed. For now, just recompute the depths using the values of
-%%% Xi_kk.
-            beta = p.Geometry.FaultDip;
-            alpha = p.Geometry.SurfaceSlope;
-            Depth_kk = Xi_kk*(sin(pi*beta/180) + cos(pi*beta/180)*tan(pi*alpha/180));
+%%% to be computed. Just recompute the depths using the values of Xi_kk.
+                    beta = p.Geometry.FaultDip;
+                    alpha = p.Geometry.SurfaceSlope;
+                    Depth_kk = Xi_kk*(sin(pi*beta/180)...
+                        + cos(pi*beta/180)*tan(pi*alpha/180));
 
-        case 'fullspace'
-            Depth_kk = nan*ones(numel(Xi_kk), 1);
+                case 'fullspace'
+                    Depth_kk = nan*ones(numel(Xi_kk), 1);
 
-        case 'layer'
-            Depth_kk = BurialDepth*ones(numel(Xi_kk), 1);
+                case 'layer'
+                    Depth_kk = BurialDepth*ones(numel(Xi_kk), 1);
             
-        case 'strikeslip'
-            beta = p.Geometry.FaultDip;
-            alpha = p.Geometry.SurfaceSlope;
-            Depth_kk = Xi_kk*(sin(pi*beta/180) + cos(pi*beta/180)*tan(pi*alpha/180));
-    end
+                case 'strikeslip'
+                    beta = p.Geometry.FaultDip;
+                    alpha = p.Geometry.SurfaceSlope;
+                    Depth_kk = Xi_kk*(sin(pi*beta/180)...
+                        + cos(pi*beta/180)*tan(pi*alpha/180));
+            end
     
 %%% Return the results.
-    Out_S = struct('Case', geometry, 'EigenValues', lambda, 'EigenVectors', V,...
-        'lambda_1', lambda_1, 'vector_1', vector_1, 'WaveLengths', H,...
-        'WaveLengthLoc', [Xi_kk, Depth_kk], 'Stability', 0, 'Determinant',...
-        De, 'Trace', Tr);
-else
-    Out_S = struct('Case', geometry, 'EigenValues', l_pos, 'EigenVectors', V_pos,...
-        'Stability', 1, 'Determinant', De, 'Trace', Tr);
-end
+            Out_S = struct('Case', geometry, 'EigenValues', lambda,...
+                'EigenVectors', V, 'lambda_1', lambda_1, 'vector_1', vector_1,...
+                'WaveLengths', H, 'WaveLengthLoc', [Xi_kk, Depth_kk],...
+                'Stability', 0, 'Determinant', De, 'Trace', Tr);
+        else
+            Out_S = struct('Case', geometry, 'EigenValues', l_pos,...
+                'EigenVectors', V_pos, 'Stability', 1, 'Determinant', De,...
+                'Trace', Tr);
+        end
 
+%%% Find just the eigenvalue with the largest real part.        
     case 'boundary'
-%%% Find the eigenvalue with the largest real part.
         switch geometry            
             case 'fullspace'
                 lambda = eigs(A, 1, 'largestreal');
@@ -136,8 +138,8 @@ end
                 if N < 50
                     lambda = eigs(A, 1, 'largestreal');
                 else
-                    lambda = eigs(A, 1, 'largestreal', 'SubspaceDimension', 50,...
-                        'Tolerance', 1e-11);
+                    lambda = eigs(A, 1, 'largestreal', 'SubspaceDimension',...
+                        50, 'Tolerance', 1e-11);
                 end
 
             case 'layer'
@@ -146,9 +148,11 @@ end
         end
 
         if real(lambda) > 0
-            Out_S = struct('Case', geometry, 'EigenValue', lambda, 'Stability', 0);
+            Out_S = struct('Case', geometry, 'EigenValue', lambda,...
+                'Stability', 0);
         else
-            Out_S = struct('Case', geometry, 'EigenValue', lambda, 'Stability', 1);
+            Out_S = struct('Case', geometry, 'EigenValue', lambda,...
+                'Stability', 1);
         end
 end
 
