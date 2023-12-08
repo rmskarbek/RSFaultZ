@@ -25,16 +25,17 @@ function [UX, UY, Time, K_x, K_y] = RSFaultZ_Displacement(SimData, C, T)
 %-------------------------------------------------------------------------%
 
 %%% Fault coordinates.
-Xi = SimData.p.Geometry.FaultCoordinates;
-N = SimData.p.Geometry.GridPoints;
+Xi = SimData.Params.Geometry.FaultCoordinates;
+N = SimData.Params.Geometry.GridPoints;
 
 %%% Geometry.
-beta = SimData.p.Geometry.FaultDip;
-alpha = SimData.p.Geometry.SurfaceSlope;
+geom = SimData.Params.Options.Geometry;
+beta = SimData.Params.Geometry.FaultDip;
+alpha = SimData.Params.Geometry.SurfaceSlope;
 
 %%% Elastic constants.
-ShearMod = SimData.p.Material.ShearModulus;
-Poisson = SimData.p.Material.PoissonRatio;
+ShearMod = SimData.Params.Material.ShearModulus;
+Poisson = SimData.Params.Material.PoissonRatio;
 
 %%% Convert displacement locations to complex coordinates.
 Z = complex(C(:,1), C(:,2));
@@ -64,8 +65,15 @@ Slip = downsample(SimData.Output.Slip, T)';
 UX = nan(M, N_t);
 UY = nan(M, N_t);
 
-%%% Compute displacements.
+%%% Compute displacements. For normal faults the sense of slip is opposite
+%%% from thrust faults, so the sign of all displacements changes.
 for k = 1:N_t
-    UX(:,k) = K_x*Slip(:,k);
-    UY(:,k) = K_y*Slip(:,k);
+    switch geom
+        case 'Thrust Fault'
+            UX(:,k) = K_x*Slip(:,k);
+            UY(:,k) = K_y*Slip(:,k);
+        case 'Normal Fault'
+            UX(:,k) = -K_x*Slip(:,k);
+            UY(:,k) = -K_y*Slip(:,k);
+    end
 end
