@@ -10,6 +10,7 @@ elseif strcmp(geom ,'Normal Fault')
     sign = -1;
 elseif strcmp(geom ,'Full Space')
     geometry = 'fullspace';
+    sign = 0;
 else
     geometry = 'layer';
 end
@@ -30,14 +31,12 @@ L_b = p.Friction.L_b;
 switch geometry
 %%% geometry-specific parameters.
 %%% See notes on p.65 in Bienfang1 for half-space equations.    
-    case 'halfspace'
-%%% These are HODLR matrices, but will convert to dense matrices on LINE 55.        
+
+    case {'halfspace', 'fullspace'}
+%%% These are HODLR matrices, but get converted to dense matrices in
+%%% construction of A_ul, upper left block.
         K_s = (1/(2*pi))*p.Geometry.ShearKernel;
         K_n = sign*(1/(2*pi))*p.Geometry.NormalKernel;
-
-    case 'fullspace'
-        K_s = (1/(2*pi))*FullSpace((1:N), (1:N), Xi');                       
-        K_n = 0;
 
     case 'layer'
         BurialDepth = p.Geometry.BurialDepth;
@@ -52,9 +51,9 @@ end
 %%% Identity matrix.
 I = eye(N);
 %%% Upper left block.
-A_ul = (b/a)*(L_b*(K_s - mu*K_n) + I);
+A_ul = (b./a).*(L_b*(K_s - mu*K_n) + I);
 %%% Upper right block.
-A_ur = (b/a)*I;
+A_ur = (b./a).*I;
 %%% Lower left block.
 A_ll = -I;
 %%% Lower right block.
@@ -132,7 +131,12 @@ switch calc
     case 'boundary'
         switch geometry            
             case 'fullspace'
-                lambda = eigs(A, 1, 'largestreal');
+                if N < 50
+                    lambda = eigs(A, 1, 'largestreal');
+                else
+                    lambda = eigs(A, 1, 'largestreal', 'SubspaceDimension',...
+                        50, 'Tolerance', 1e-11);
+                end
 
             case 'halfspace'
                 if N < 50

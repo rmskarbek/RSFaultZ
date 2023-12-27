@@ -36,7 +36,7 @@ dxi = 25;
 %-------------------------------------------------------------------------%
 
 %%% Create an instance of the app.
-R = faultZ;
+R = RSFaultZ;
 
 %%% Set options.
 R.GeometryDropDown.Value = 'Full Space';
@@ -61,7 +61,7 @@ R.RunTimeyrEditField.Value = RunTime;
 %%% Set frictional parameters.
 R.aEditField.Value = a;
 R.bEditField.Value = b;
-R.dcEditField.Value = d_c;
+R.dcmEditField.Value = d_c;
 R.v0EditField.Value = v_ref;
 R.mu0EditField.Value = mu_ref;
 
@@ -77,8 +77,8 @@ R.dximEditField.ValueChangedFcn([],[]);
 %%% Set the properties to compute grid coordinates.
 R.SetPropertiesButton.ButtonPushedFcn([],[]);
 
-%%% NEED TO SET import flag TO TRUE OR WHATEVER, TO PREVENT ALTERED VECTORS
-%%% FROM BEING OVERWRITTEN.
+%%% Set import flag to true, to prevent altered parameters from being
+%%% overwritten.
 R.p.Options.Import = 1;
 
 %%% Plot the geometry.

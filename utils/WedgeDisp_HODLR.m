@@ -1,4 +1,6 @@
 function Kernel = WedgeDisp_HODLR(i, j, xi, z, beta, alpha, G, nu, flag)
+%%% The function computes the complex potentials for displacement
+%%% calculations.
 
 %%% Fault dip in z-plane.
     beta = pi - beta*pi/180;
@@ -95,4 +97,19 @@ function Kernel = WedgeDisp_HODLR(i, j, xi, z, beta, alpha, G, nu, flag)
         u_y = imag(u_c);
 
     end
+
+    function x = bclog(z, theta)
+    %%% Zp locates the branch cut. Zp2 shifts the displacements.
+    
+    
+    % arg[z_, σ_: - Pi] := Arg[z Exp[-I (σ + Pi)]] + σ + Pi;
+    % log[z_, σ_: - Pi] := Log[Abs[z]] + I arg[z, σ]
+    
+        x = log(abs(z)) + 1i*angle(z.*exp(-1i*(theta + pi))) + 1i*pi;
+    
+    %    x = log(abs(z)) + 1i*angle(z.*exp(-1i*(theta + pi))) + theta + pi;% + 1i*pi;
+    %    x = log(abs(z)) + 1i*angle(z.*exp(1i*(theta+pi))) - 1i*theta + 1i*pi;
+    %    x = log(abs(z)) + 1i*(angle(z) + pi);
+    end
+
 end

@@ -1,4 +1,6 @@
 function BasicMovie(Out)
+%%% This function provides some basic commands to animate the results of a
+%%% simulation.
 
 %Out = SimData2;
 % FaultLength = Out.Params.Geometry.FaultLength;

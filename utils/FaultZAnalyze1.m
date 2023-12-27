@@ -1,5 +1,11 @@
 function [T_n, D_n, V_m, V_max, Time] = FaultZAnalyze1(SimData)
 
+%%% This function performs some basic analysis of simulation output.
+%%% Assuming the simulation produced earthquakes events (i.e. not just slow
+%%% slip events), this function determines the number of events, and the 
+%%% times and locations when each event nucleated.
+
+
 spy = 365.25*24*3600;
 Time = SimData.Output.Time/spy;
 [V_m, I] = max(SimData.Output.Vel,[],2);
