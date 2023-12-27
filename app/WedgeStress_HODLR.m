@@ -1,6 +1,4 @@
 function Kernel = WedgeStress_HODLR(i, j, xi, beta, alpha, d, flag, varargin)
-%%% This code is currently restricted to computing stresses on lines that
-%%% intersect the origin.
 
 %%% To evaluate for full matrix, where x = xi are Nx1 vectors:
 %%% Kernel = WedgeStress_HODLR((1:N), (1:N), Xi', beta, alpha, 1);
@@ -48,9 +46,9 @@ function Kernel = WedgeStress_HODLR(i, j, xi, beta, alpha, d, flag, varargin)
 
 %%% Assemble.
     if flag == 1
-        Kernel = -(Shear_1 - Shear_2);
+        Kernel = Shear_2 - Shear_1;
     else
-        Kernel = -(Normal_1 - Normal_2);
+        Kernel = Normal_2 - Normal_1;
     end               
 
 
