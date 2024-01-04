@@ -1,4 +1,6 @@
 function BasicMovie(Out)
+%%% This file needs to be cleaned up.
+
 %%% This function provides some basic commands to animate the results of a
 %%% simulation.
 
