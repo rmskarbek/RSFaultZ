@@ -1,6 +1,6 @@
 The files in this folder can be used to run the community code benchmark problem BP3-QD, defined in Erickson et al. (2023).
 
-The script BP3QD_Plots.m will automatically set up and run the problem in RSFaultZ for: (1) a thrust fault with 60 deg dip, and (2) normal fault with 30 deg dip. BP3QD_Plots.m calls the other m-files in this folder, which do not need to be called by the user.
+The script BP3QD_Plots.m will automatically set up and run the problem in RSFaultZ for: (1) a thrust fault with 60 deg dip, and (2) normal fault with 30 deg dip. BP3QD_Plots.m calls Run_BP3QD.m which executes the simulations, then calls BP3QD_OnFault.m, which extracts on-fault simulation data at specified locations, then finally calls BP3QD_Displacements.m, which computes displacemts at specified locations off of the fault.
 
 For comparison with the output from RSFaultZ, this folder also contains data from the FDRA code, downloaded from  https://strike.scec.org/cvws/cgi-bin/seas.cgi
 
