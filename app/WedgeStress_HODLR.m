@@ -1,5 +1,7 @@
 function Kernel = WedgeStress_HODLR(i, j, xi, beta, alpha, d, flag, varargin)
 
+%%% This file needs to be cleaned up. I'm not sure if the observation vector option is still working.
+  
 %%% To evaluate for full matrix, where x = xi are Nx1 vectors:
 %%% Kernel = WedgeStress_HODLR((1:N), (1:N), Xi', beta, alpha, 1);
 
