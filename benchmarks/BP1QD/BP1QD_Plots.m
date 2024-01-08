@@ -8,7 +8,8 @@
 %%% doi: 10.1785/0220190248.
 
 
-%%% This script executes in ~8 minutes on Rob's laptop.
+%%% This script executes in ~2 minutes on Rob's computer: 3.7 GHz processor,
+%%% 64 GB RAM, Linux OS.
 
 %%%---------------------------------------------------------------------%%%
 %%%---------------------------------------------------------------------%%%

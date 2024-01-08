@@ -8,7 +8,8 @@
 %%% Aseismic Slip (SEAS), Bull. Seismol. Soc. Am. 113, 499–523, 
 %%% doi: 10.1785/0120220066.
 
-%%% This script executes in ~10 minutes on Rob's computer.
+%%% This script executes in ~8 minutes on Rob's computer: 3.7 GHz processor,
+%%% 64 GB RAM, Linux OS.
 
 %%%---------------------------------------------------------------------%%%
 %%%---------------------------------------------------------------------%%%
