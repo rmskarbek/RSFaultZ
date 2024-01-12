@@ -256,7 +256,7 @@ ax.YTick = [(0:0.05:0.35) exp(-1) 0.4];
 ax.YTickLabel{9,1} = '$e^{-1}$';
 ax.TickLabelInterpreter = 'latex';
 
-xlabel('Normalized Burial Depth ($d / L_b$)', 'Interpreter', 'latex')
+xlabel('Normalized Burial Depth ($d / h^*_F$)', 'Interpreter', 'latex')
 ylabel('Critical Fault Length ($L^*_D / h_F^*$)', 'Interpreter', 'latex')
 
 text(nexttile(1), 0.05, 0.05, 'A', 'units', 'normalized', 'FontSize', 30,...
