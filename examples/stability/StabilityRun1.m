@@ -176,8 +176,7 @@ for i = 1:M
                         L_star = L_star + dL_star;
                     end
                 end
-            
-%%% This determines the boundary to within p/m 0.0025*L_star. I think.
+
                 T{j,i} = {mean([L_star, L_star - dL_star])};
                 P{j,i} = {p};
 
