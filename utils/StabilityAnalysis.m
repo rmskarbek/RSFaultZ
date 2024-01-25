@@ -32,11 +32,15 @@ switch geometry
 %%% geometry-specific parameters.
 %%% See notes on p.65 in Bienfang1 for half-space equations.    
 
-    case {'halfspace', 'fullspace'}
+    case 'halfspace'
 %%% These are HODLR matrices, but get converted to dense matrices in
 %%% construction of A_ul, upper left block.
         K_s = (1/(2*pi))*p.Geometry.ShearKernel;
         K_n = sign*(1/(2*pi))*p.Geometry.NormalKernel;
+
+    case 'fullspace'
+        K_s = (1/(2*pi))*p.Geometry.ShearKernel;
+        K_n = 0;
 
     case 'layer'
         BurialDepth = p.Geometry.BurialDepth;
