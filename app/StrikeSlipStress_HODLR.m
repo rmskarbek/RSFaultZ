@@ -1,4 +1,4 @@
-function Kernel = StrikeSlipStress_HODLR(i, j, xi, beta, alpha, flag)
+function Kernel = StrikeSlipStress_HODLR(i, j, xi, beta)
 %%% This is in my coordinates.
 I = sqrt(-1);
 %%% Along-fault spatial coordinate.
@@ -38,10 +38,5 @@ Y = exp(I*theta).*(1./(z - z_0) - 1./(z - zbar_0));
 %%% Shear stress due to screw dislocation
 Shear_2 = imag(Y);
 
-
 %%% Assemble.
-if flag == 1
-    Kernel =  Shear_1 - Shear_2;
-else
-    Kernel = Normal_1 - Normal_2;
-end
+Kernel =  Shear_1 - Shear_2;
