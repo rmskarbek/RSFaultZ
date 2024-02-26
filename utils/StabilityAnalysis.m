@@ -55,7 +55,7 @@ end
 %%% Identity matrix.
 I = eye(N);
 %%% Upper left block.
-A_ul = (b./a).*(L_b*(K_s - mu*K_n) + I);
+A_ul = (b./a).*(L_b.*(K_s - mu*K_n) + I);
 %%% Upper right block.
 A_ur = (b./a).*I;
 %%% Lower left block.
