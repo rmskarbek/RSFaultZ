@@ -9,4 +9,6 @@ Codes for running the BP1-QD and BP3-QD benchmarks can be found in the benchmark
 
 [![DOI](https://zenodo.org/badge/499196046.svg)](https://zenodo.org/badge/latestdoi/499196046)
 
+
+## The RSFaultZ User Interface
 ![RSFaultZ1](https://github.com/rmskarbek/RSFaultZ/assets/41635619/af4f3456-6d2d-42a6-9225-75378e0f87ec)
