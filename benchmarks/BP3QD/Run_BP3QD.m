@@ -42,7 +42,7 @@ R = RSFaultZ;
 
 %%% Set options.
 R.StateLawDropDown.Value = 'Aging';
-R.PlotsOnCheckBox.Value = false;
+% R.PlotsOnCheckBox.Value = false;
     
 %%% Set geometry.
 R.GeometryDropDown.Value = geom;
@@ -77,10 +77,7 @@ R.dximEditField.Value = dxi;
 R.dximEditField.ValueChangedFcn([],[]);
 
 %%% Set the properties to compute grid coordinates.
-R.SetPropertiesButton.ButtonPushedFcn([],[]);
-
-%%% Plot the geometry.
-R.PlotGeometryButton.ButtonPushedFcn([],[]);
+R.CreateGridButton.ButtonPushedFcn([],[]);
 
 %%% Get fault coordinates.
 N = R.p.Geometry.GridPoints;
@@ -123,7 +120,14 @@ R.p.Geometry.InitConditions = Vars_i;
 R.p.Options.Import = 1;
 
 %%% Plot the geometry.
-R.PlotGeometryButton.ButtonPushedFcn([],[]);
+% R.PlotButton.ButtonPushedFcn([],[]);
+
+%%% Plot the shear stress.
+R.PlotTypeDropDown.Value = 'Shear Stress';
+R.PlotTypeDropDown.ValueChangedFcn([],[]);
+R.yminEditField.Value = 20;
+R.ymaxEditField.Value = 60;
+R.PlotButton.ButtonPushedFcn([],[]);
 
 %%% Run the simulation.
 R.StartButton.ButtonPushedFcn([],[]);
