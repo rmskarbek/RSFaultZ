@@ -44,6 +44,7 @@ hold off
 
 xlim([0 700])
 ylim([24 48])
+xlabel('Time (years)')
 ylabel('Shear Stress (MPa)')
 title('Vertical Strike-Slip Fault')
 
@@ -59,5 +60,6 @@ hold off
 
 xlim([0 700])
 ylim([-17 1])
+xlabel('Time (years)')
 ylabel('log[Slip Rate (m/s)]')
 title('Vertical Strike-Slip Fault')
