@@ -36,9 +36,10 @@ L_b = d_c*M/(b*EffStress_0);
 %%% For thin layer geometry, the length scales are modified.
 switch geom
     case 'Layer'
-        d = Burial_Star*L_b;
+        d = Burial_Star*L_b;            % [m]
         H_s = (8*pi*d*H_s).^(1/2);
         L_b = (2*d*L_b).^(1/2);
+        BurialDepth = d/1e3;            % [km]
 end
 
 %%% Set grid fault length, grid spacing, and burial depth.
@@ -52,14 +53,12 @@ if a - b < 0
 %%% For dipping critical fault length, make sure there are at least 250
 %%% grid points.
             dxi = 1e3*FaultLength/250;
+            BurialDepth = Burial_Star*H_s/1e3;  % [km]
 
         case {'Full Space', 'Layer'}
 %%% For full-space and thin layer calculations.
             dxi = L_b/20;
-    end
-
-    %%% Units might be wrong here.
-    BurialDepth = Burial_Star*H_s/1e3;
+    end      
 else
 
 %%% Fault length [km] and grid spacing [m] for VS.
@@ -85,13 +84,13 @@ R.PlotsOnCheckBox.Value = false;
     
 %%% Set geometry.
 if strcmp(geom, 'Layer') == 1
-    R.GeometryDropDown.Value = 'Full Space';
+    R.GeometryDropDown.Value = 'Thrust Fault';
 else
     R.GeometryDropDown.Value = geom;
 end
 
 R.FaultLengthkmEditField.Value = FaultLength;
-if strcmp(geom, 'Thrust Fault') == 1 || strcmp(geom, 'Normal Fault')
+if strcmp(geom, 'Full Space') == 0
     R.DipAngleEditField.Value = beta;
     R.BurialDepthkmEditField.Value = BurialDepth;
 end
@@ -132,10 +131,6 @@ R.PlotGeometryButton.ButtonPushedFcn([],[]);
 
 %%% Get parameters structure.
 p = R.p;
-switch geom
-    case 'Layer'
-        p.Geometry.BurialDepth = d;
-end
 
 %%% Run the simulation.
 % R.StartButton.ButtonPushedFcn([],[]);

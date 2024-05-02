@@ -1,5 +1,5 @@
 function [T, P] = StabilityRun1(ab, Length_star, calc, geom, beta, mu_0,...
-    Burial_Star)
+    Burial_Star, type)
 %%% This function sets up and runs numerical stability analysis for
 %%% different sets of input parameters. It is called by...
 
@@ -65,7 +65,12 @@ switch geom
 
     case {'Full Space', 'Layer'}
         rowNames = abNames;
-        columnNames = LstarNames;
+        switch(type)
+            case 'search'
+                columnNames = {'L_star'};
+            case 'wavelength'
+                columnNames = LstarNames;
+        end
         
         N = numel(rowNames);
         M = numel(columnNames);
@@ -77,7 +82,6 @@ switch geom
         columnNames = BstarNames;
 
         N = numel(rowNames);
-        % M = 1;
         M = numel(columnNames);
         T = table('Size', [N M], 'VariableTypes', repmat({'cell'}, 1, M),...
             'VariableNames', columnNames);
@@ -124,63 +128,44 @@ for i = 1:M
                 z = i;
         end
 
-        switch geom
-            case {'Full Space', 'Layer'}
-
-%%% Setup RSFaultZ.
-                if i == 1 && j ==1
-                    [R, p] = StabilitySetup(ab(k), Length_star(q), beta(w),...
-                        mu_0(y), geom, Burial_Star(z));
-                else
-                    [R, p] = StabilitySetup(ab(k), Length_star(q), beta(w),...
-                        mu_0(y), geom, Burial_Star(z), R);
-                end
- 
-%%% Conduct the stability calculations.
-                Out_S = StabilityAnalysis(p, calc, geom);
-                T{j,i} = {Out_S};
-                P{j,i} = {p};
-
-            case {'Thrust Fault', 'Normal Fault'}
+        switch(type)
+            case 'search'
+            %%% Skip the calculation if the dip angle and the burial depth are both zero.
                 if beta(w) == 0 && Burial_Star(z) == 0
                     continue
                 end
-%%% Assume stability = 0 with L_star = 0.4.
-                tol = 0.0005;
-                qq = 0;
-                L_star = 0.4;
-                dL_star = 0.4;
-                while abs(dL_star) > tol
-                    qq = qq + 1;
-                
-%%% Set up the model.
-                    if exist('R', 'var')
-                        [R, p] = StabilitySetup(ab(k), L_star, beta(w), mu_0(y),...
-                            geom, Burial_Star(z), R);
-                    else
-                        [R, p] = StabilitySetup(ab(k), L_star, beta(w), mu_0(y),...
-                            geom, Burial_Star(z));
-                    end
-                
-%%% Conduct the stability calculations.
-                    Out_S = StabilityAnalysis(p, calc, geom);
-                    
-%%% Check the stability, and update the fault length.
-                    stab = Out_S.Stability;            
-                    if stab == 1
-                        dL_star = abs(dL_star/2);
-                        L_star = L_star + dL_star;
-                
-                    else
-                        dL_star = -abs(dL_star/2);
-                        L_star = L_star + dL_star;
-                    end
+        
+            %%% Conduct the stability search for the critical fault length.
+                tol = 0.001;
+                if exist('R', 'var')
+                    [R, p, L_star] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
+                        Burial_Star(z), tol, calc, R);
+                else
+                    [R, p, L_star] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
+                        Burial_Star(z), tol, calc);
                 end
-
-                T{j,i} = {mean([L_star, L_star - dL_star])};
+            
+            %%% Store the critical fault length and the RSFaultZ parameters
+            %%% structure.
+                T{j,i} = {L_star};
                 P{j,i} = {p};
 
+            case 'wavelength'
+            %%% Set up the fault system.
+                if exist('R', 'var')
+                    [R, p] = StabilitySetup2(ab(k), Length_star(q), beta(w), mu_0(y), geom,...
+                        Burial_Star(z), R);
+                else
+                    [R, p] = StabilitySetup2(ab(k), Length_star(q), beta(w), mu_0(y), geom,...
+                        Burial_Star(z));
+                end
+ 
+            %%% Conduct the stability calculations.
+                Out_S = StabilityAnalysis(p, calc, geom);
+                T{j,i} = {Out_S};
+                P{j,i} = {p};
         end
+
     end
 end
 
