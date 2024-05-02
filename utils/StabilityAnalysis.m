@@ -151,8 +151,12 @@ switch calc
                 end
 
             case 'layer'
-                lambda = eigs(A, 1, 'largestreal', 'SubspaceDimension', 50,...
-                    'Tolerance', 1e-11);
+                if N < 50
+                    lambda = eigs(A, 1, 'largestreal');
+                else
+                    lambda = eigs(A, 1, 'largestreal', 'SubspaceDimension',...
+                        50, 'Tolerance', 1e-11);
+                end
         end
 
         if real(lambda) > 0
@@ -162,12 +166,6 @@ switch calc
             Out_S = struct('Case', geometry, 'EigenValue', lambda,...
                 'Stability', 1);
         end
-end
-
-%%% Full space shear stress operator.
-function K = FullSpace(i, j, xi)
-    dxi = mean(diff(xi));
-    K = 1./(xi(j) - dxi/2 - xi(i)') - 1./(xi(j) + dxi/2 - xi(i)');
 end
 
 %%% Assign a phase angle to locations on the fault. 
