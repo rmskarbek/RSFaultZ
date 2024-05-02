@@ -29,9 +29,9 @@ function [R, p, L_star] = StabilitySearch(ab, beta, mu_0, geom, Burial_Star, tol
    
     %%% Set up the model.
         if exist('R', 'var')
-            [R, p] = StabilitySetup2(ab, L_star, beta, mu_0, geom, Burial_Star, R);
+            [R, p] = StabilitySetup(ab, L_star, beta, mu_0, geom, Burial_Star, R);
         else
-            [R, p] = StabilitySetup2(ab, L_star, beta, mu_0, geom, Burial_Star);
+            [R, p] = StabilitySetup(ab, L_star, beta, mu_0, geom, Burial_Star);
         end
     
     %%% Conduct the stability calculations.
