@@ -41,9 +41,12 @@
 %%% finding the smallest fault length that is unstable. Do the calculation
 %%% for the full-space and thin layer geometries.
 
-%%% Neither geometry has a dip angle. The value of mu_0 does not affect
-%%% these calculations, but needs to be set to some value.
-beta = nan;
+%%% Set the calculation type to search for the critical fault length. Length_star is not
+%%% used for this calculation, so set it to a dummy value.
+type = 'search';
+Length_star = nan;
+
+%%% The value of mu_0 does not affect these calculations, but needs to be set to some value.
 mu_0 = 0.6;
 
 %%% Values of a/b.
@@ -53,37 +56,26 @@ ab1 = (0.1:0.1:0.9)';
 %%% the eigenvalue with the largest real part.
 calc = 'boundary';
 
-%%% Full space. Values of fault length as Length_star = FaultLength/h_star_F.
+%%% Full space.
 geom = 'Full Space';
+beta = nan;
 Burial_Star = nan;
-Length_starF = (0.35:0.002:0.368)';
-[T_F, P_F] = StabilityRun1(ab1, Length_starF, calc, geom, beta, mu_0, Burial_Star);
+[T_F, P_F] = StabilityRun1(ab1, Length_star, calc, geom, beta, mu_0, Burial_Star, type);
 
 %%% Thin layer. Values of fault length as Length_star = FaultLength/h_star_L,
 %%% and burial depth as Burial_Star = BurialDepth/h_star_L.
 geom = 'Layer';
+calc = 'full';
+beta = 0;
 Burial_Star = 0.01;
-Length_starL = (0.49:0.002:0.508)';
-[T_L, P_L] = StabilityRun1(ab1, Length_starL, calc, geom, beta, mu_0, Burial_Star);
+[T_L, P_L] = StabilityRun1(ab1, Length_star, calc, geom, beta, mu_0, Burial_Star, type);
 
 %%% This loop pulls out the desired fault length for each value of a/b.
 L_star_F = nan(numel(ab1),1);
 L_star_L = nan(numel(ab1),1);
 for i = 1:numel(ab1)
-    
-    for j = 1:numel(Length_starF)
-        if T_F.(j){i,1}.Stability == 0
-            L_star_F(i,1) = P_F.(j){i,1}.Geometry.FaultLength;
-            break
-        end
-    end
-
-    for j = 1:numel(Length_starL)
-        if T_L.(j){i,1}.Stability == 0
-            L_star_L(i,1) = P_L.(j){i,1}.Geometry.FaultLength;
-            break
-        end
-    end
+    L_star_F(i,1) = P_F.(1){i,1}.Geometry.FaultLength;            
+    L_star_L(i,1) = P_L.(1){i,1}.Geometry.FaultLength;
 end
 
 %%%---------------------------------------------------------------------%%%
@@ -92,10 +84,14 @@ end
 %%% Calculation 2: For the thin layer geometry, determine the wavelength of
 %%% the 1st unstable mode as a function of fault length. This wavelength 
 %%% approaches H_s_L as the fault length increases.
+%%% Set the calculation type to output the wavelengths.
+type = 'wavelength';
+
+%%% Set other parameters for the calculation.
 ab2 = 0.5;
 Length_starL2 = (0.2:0.2:10)';
 calc = 'full';
-[T_L2, P_L2] = StabilityRun1(ab2, Length_starL2, calc, geom, beta, mu_0, Burial_Star);
+[T_L2, P_L2] = StabilityRun1(ab2, Length_starL2, calc, geom, beta, mu_0, Burial_Star, type);
 
 %%% Analytic result for wavelengths as a function of fault length.
 H_s_F = P_L2.(1){1,1}.Friction.H_star;
@@ -157,7 +153,8 @@ L_bh = (2*M*d*d_c/(b*EffStress_0)).^(1/2);
 
 %%% Plot the results from Calculation 1.
 figure;
-tiledlayout(1,2);
+set(gcf,'Color','w')
+tiledlayout(1, 2, 'Padding', 'tight');
 nexttile;
 
 plot(a/b, 1e-3*H_s_L1/2, 'c', 'LineWidth', 3);
@@ -211,3 +208,6 @@ ax.TickLabelInterpreter = 'latex';
 
 text(nexttile(2), 0.9, 0.9, 'B', 'units', 'normalized', 'FontSize', 30,...
     'Interpreter', 'latex')
+
+%%% Export an .eps file of the figure
+% export_fig Figure2.eps
