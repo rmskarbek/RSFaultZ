@@ -1,5 +1,4 @@
 function SimData = Run_BP6QD
-
 %%% This script will programatically run the SCEC benchmark problem BP6QD.
 
 %-----------------------------------------------------------------------------------%
@@ -29,7 +28,7 @@ Compressibility = 1e-2;                        % [1 / MPa]
 Permeability = 1e-13;                           % [m^2]
 
 %%% Name of fluid source function.
-SourceFunctionName= 'BP6_SourceFunction';
+SourceFunctionName = 'BP6_SourceFunction';
 
 %%% Background effective stress.
 EffStress_0 = 50;                       % [MPa]
@@ -53,9 +52,6 @@ R = RSFaultZ;
 
 %%% Set options.
 R.StateLawDropDown.Value = 'Aging';
-%%% Set import flag to 1, to prevent altered parameters from being overwritten. This
-%%% needs to be done before the grid is created.
-R.p.Options.Import = 1;
 
 %%% Set geometry.
 R.GeometryDropDown.Value = geom;
@@ -102,8 +98,16 @@ R.dximEditField.Value = dxi;
 %%% Update the Grid Controls panel.
 R.dximEditField.ValueChangedFcn([],[]);
 
-%%% Create the grid.
+%%% Select steady state shear stress intial condition. This won't do anything since the
+%%% initial conditions are overwritten below.
+R.SteadyStateConditionButtonGroup.SelectedObject.Value = false;
+
+%%% Create the grid. The parameters structure p does not exist until CreateGridButton is
+%%% pressed. Any attempts to set values in p will be overwritten by CreateGridButtonPushed
 R.CreateGridButton.ButtonPushedFcn([],[]);
+
+%%% Set import flag to 1, to prevent altered parameters from being overwritten.
+R.p.Options.Import = 1;
 
 %%% Get fault coordinates.
 N = R.p.Geometry.GridPoints;
@@ -113,6 +117,8 @@ Xi = R.p.Geometry.FaultCoordinates;
 eta = R.p.Material.RadiationDamping;
 
 %%% Initial slip velocity.
+R.InitialVelocitymsEditField.Value = v_init;
+R.RandomVariationEditField.Value = 0;
 v_i = v_init*ones(size(Xi));
 
 %%% Initial normal stress.

@@ -22,6 +22,7 @@ mu_ref = 0.6;
 v_shear = 3464;
 density = 2670;
 ShearMod = v_shear^2*density/1e9;
+Poisson = 0;
 
 %%% Background effective stress.
 EffStress_0 = 50;
@@ -55,6 +56,7 @@ R.NormalStressMPaEditField.Value = EffStress_0;
 %%% Set elastic parameters.
 R.vsmsEditField.Value = v_shear;
 R.ShearModulusGPaEditField.Value = ShearMod;
+R.PoissonRatioEditField.Value = Poisson;
 
 %%% Set run time.
 R.RunTimeyrEditField.Value = RunTime;
@@ -66,16 +68,24 @@ R.dcmEditField.Value = d_c;
 R.v0EditField.Value = v_ref;
 R.mu0EditField.Value = mu_ref;
 
-%%% Set plate rate.
-R.LoadingRatemsEditField.Value = v_plate;
-
 %%% Set grid spacing.
 R.dximEditField.Value = dxi;
 
 %%% Update the Grid Controls panel.
 R.dximEditField.ValueChangedFcn([],[]);
 
-%%% Set the properties to compute grid coordinates.
+%%% Set plate rate.
+R.LoadingRatemsEditField.Value = v_plate;
+
+%%% Set the intial velocity conditions.
+R.InitialVelocitymsEditField.Value = v_plate;
+R.RandomVariationEditField.Value = 0;
+
+%%% Select steady state shear stress intial condition. This won't do anything since the
+%%% initial conditions are overwritten below.
+R.SteadyStateConditionButtonGroup.SelectedObject.Value = false;
+
+%%% Create the grid.
 R.CreateGridButton.ButtonPushedFcn([],[]);
 
 %%% Get fault coordinates.
@@ -99,7 +109,10 @@ R.p.Friction.a = a;
 eta = R.p.Material.RadiationDamping;
 
 %%% Initial slip velocity.
-v_i = 1e0*v_plate*ones(size(Xi));
+R.InitialVelocitymsEditField.Value = v_plate;
+R.RandomVariationEditField.Value = 0;
+v_i = v_plate*ones(size(Xi));
+
 %%% Initial normal stress.
 sigma_i = EffStress_0.*ones(size(Xi));
 %%% Initial shear stress.

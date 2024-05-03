@@ -76,6 +76,10 @@ R.dximEditField.Value = dxi;
 %%% Update the Grid Controls panel.
 R.dximEditField.ValueChangedFcn([],[]);
 
+%%% Select steady state shear stress intial condition. This won't do anything since the
+%%% initial conditions are overwritten below.
+R.SteadyStateConditionButtonGroup.SelectedObject.Value = false;
+
 %%% Set the properties to compute grid coordinates.
 R.CreateGridButton.ButtonPushedFcn([],[]);
 
@@ -100,7 +104,10 @@ R.p.Friction.a = a;
 eta = R.p.Material.RadiationDamping;
 
 %%% Initial slip velocity.
-v_i = 1e0*v_plate*ones(size(Xi));
+R.InitialVelocitymsEditField.Value = v_plate;
+R.RandomVariationEditField.Value = 0;
+v_i = v_plate*ones(size(Xi));
+
 %%% Initial normal stress.
 sigma_i = EffStress_0.*ones(size(Xi));
 %%% Initial shear stress.
