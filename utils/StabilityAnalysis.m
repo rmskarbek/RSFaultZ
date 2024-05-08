@@ -33,8 +33,8 @@ switch geometry
 %%% See notes on p.65 in Bienfang1 for half-space equations.    
 
     case 'halfspace'
-%%% These are HODLR matrices, but get converted to dense matrices in
-%%% construction of A_ul, upper left block.
+    %%% These are HODLR matrices, but get converted to dense matrices in
+    %%% construction of A_ul, upper left block.
         K_s = (1/(2*pi))*p.Geometry.ShearKernel;
         K_n = sign*(1/(2*pi))*p.Geometry.NormalKernel;
 
@@ -43,6 +43,7 @@ switch geometry
         K_n = 0;
 
     case 'layer'
+    %%% This scaling accounts for the relationship between L_b and L_bh.
         BurialDepth = p.Geometry.BurialDepth;
         D2 = full(three_point_centered_uni_D2(Xi(1), Xi(N), N));
         D2(1,2) = 1/dxi^2;
