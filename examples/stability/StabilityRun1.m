@@ -1,5 +1,5 @@
-function [T, P] = StabilityRun1(ab, Length_star, calc, geom, beta, mu_0,...
-    Burial_Star, type)
+function [T, P] = StabilityRun1(ab, Length_hat, calc, geom, beta, mu_0,...
+    Burial_hat, type)
 %%% This function sets up and runs numerical stability analysis for
 %%% different sets of input parameters. It is called by...
 
@@ -10,7 +10,7 @@ function [T, P] = StabilityRun1(ab, Length_star, calc, geom, beta, mu_0,...
 N_a = numel(ab);
 
 %%% Values of Length_star = FaultLength/h_star.
-N_L = numel(Length_star);
+N_L = numel(Length_hat);
 
 %%% Values of dip angle.
 N_b = numel(beta);
@@ -19,14 +19,14 @@ N_b = numel(beta);
 N_m = numel(mu_0);
 
 %%% Values of Burial_Star.
-N_B = numel(Burial_Star);
+N_B = numel(Burial_hat);
 
 %%% Create names for the different variables.
 abNames = cell(N_a, 1);
-LstarNames = cell(N_L, 1);
+LhatNames = cell(N_L, 1);
 betaNames = cell(N_b, 1);
 muNames = cell(N_m, 1);
-BstarNames = cell(N_B, 1);
+BhatNames = cell(N_B, 1);
 
 %%% Names for a/b values.
 for q = 1:N_a
@@ -35,7 +35,7 @@ end
 
 %%% Names for Length_star values.
 for q = 1:N_L
-    LstarNames{q,1} = ['Lstar_', num2str(Length_star(q))];
+    LhatNames{q,1} = ['Lhat_', num2str(Length_hat(q))];
 end
 
 %%% Names for beta values.
@@ -54,7 +54,7 @@ end
 
 %%% Names for Burial_star values.
 for q = 1:N_B
-    BstarNames{q,1} = ['Bstar_', num2str(Burial_Star(q))];
+    BhatNames{q,1} = ['Bhat_', num2str(Burial_hat(q))];
 end
 
 %%%---------------------------------------------------------------------%%%
@@ -65,11 +65,11 @@ switch geom
 
     case {'Full Space', 'Layer'}
         rowNames = abNames;
-        switch(type)
+        switch type
             case 'search'
-                columnNames = {'L_star'};
+                columnNames = {'L_hat'};
             case 'wavelength'
-                columnNames = LstarNames;
+                columnNames = LhatNames;
         end
         
         N = numel(rowNames);
@@ -79,7 +79,7 @@ switch geom
 
     case {'Thrust Fault', 'Normal Fault'}
         rowNames = betaNames;
-        columnNames = BstarNames;
+        columnNames = BhatNames;
 
         N = numel(rowNames);
         M = numel(columnNames);
@@ -105,46 +105,47 @@ for i = 1:M
         switch rowNames{1,1}(1)
             case 'a' % abNames
                 k = j;
-            case 'L' % LStarNames
+            case 'L' % LhatNames
                 q = j;
             case 'b' % betaNames
                 w = j;
             case 'm' % MuNames
                 y = j;
-            case 'B' % BStarNames
+            case 'B' % BhatNames
                 z = j;
         end
     
         switch columnNames{1,1}(1)
             case 'a' % abNames
                 k = i;
-            case 'L' % LStarNames
+            case 'L' % LhatNames
                 q = i;
             case 'b' % betaNames
                 w = i;
             case 'm' % MuNames
                 y = i;
-            case 'B' % BStarNames
+            case 'B' % BhatNames
                 z = i;
         end
 
-        switch(type)
+        switch type
             case 'search'
             %%% Skip the calculation if the dip angle and the burial depth are both zero.
-                if beta(w) == 0 && Burial_Star(z) == 0
+                if beta(w) == 0 && Burial_hat(z) == 0
                     continue
                 end
         
-            %%% Conduct the stability search for the critical fault length.
-                tol = 0.001;
+            %%% Conduct the stability search for the critical fault length.                
                 if exist('R', 'var')
-                    [R, p, L_star] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
-                        Burial_Star(z), tol, calc, R);
+                    [R, p, L_star, tol] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
+                        Burial_hat(z), calc, type, R);
                 else
-                    [R, p, L_star] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
-                        Burial_Star(z), tol, calc);
+                    [R, p, L_star, tol] = StabilitySearch(ab(k), beta(w), mu_0(y), geom,...
+                        Burial_hat(z), calc, type);
                 end
-            
+            %%% Tack the tolerance onto p.
+                p.tol = tol;
+
             %%% Store the critical fault length and the RSFaultZ parameters
             %%% structure.
                 T{j,i} = {L_star};
@@ -153,11 +154,11 @@ for i = 1:M
             case 'wavelength'
             %%% Set up the fault system.
                 if exist('R', 'var')
-                    [R, p] = StabilitySetup2(ab(k), Length_star(q), beta(w), mu_0(y), geom,...
-                        Burial_Star(z), R);
+                    [R, p] = StabilitySetup(ab(k), Length_hat(q), beta(w), mu_0(y), geom,...
+                        Burial_hat(z), type, R);
                 else
-                    [R, p] = StabilitySetup2(ab(k), Length_star(q), beta(w), mu_0(y), geom,...
-                        Burial_Star(z));
+                    [R, p] = StabilitySetup(ab(k), Length_hat(q), beta(w), mu_0(y), geom,...
+                        Burial_hat(z), type);
                 end
  
             %%% Conduct the stability calculations.

@@ -1,5 +1,5 @@
-function [R, p] = StabilitySetup(ab, Length_star, beta, mu_ref, geom,...
-    Burial_Star, varargin)
+function [R, p] = StabilitySetup(ab, Length_hat, beta, mu_ref, geom,...
+    Burial_hat, type, varargin)
 
 %%% This function creates an instance of RSFaultZ, or alters an already
 %%% existing instance, and sets parameters for numerical stability
@@ -36,7 +36,7 @@ L_b = d_c*M/(b*EffStress_0);
 %%% For thin layer geometry, the length scales are modified.
 switch geom
     case 'Layer'
-        d = Burial_Star*L_b;            % [m]
+        d = Burial_hat*L_b;            % [m]
         H_s = (8*pi*d*H_s).^(1/2);
         L_b = (2*d*L_b).^(1/2);
         BurialDepth = d/1e3;            % [km]
@@ -46,25 +46,30 @@ end
 if a - b < 0
 
 %%% Fault length [km] and grid spacing [m] for VW.
-    FaultLength = Length_star*H_s/1e3;
+    FaultLength = Length_hat*H_s/1e3;
 
     switch geom
         case {'Thrust Fault', 'Normal Fault'}
 %%% For dipping critical fault length, make sure there are at least 250
 %%% grid points.
             dxi = 1e3*FaultLength/250;
-            BurialDepth = Burial_Star*H_s/1e3;  % [km]
+            BurialDepth = Burial_hat*H_s/1e3;  % [km]
 
         case {'Full Space', 'Layer'}
-%%% For full-space and thin layer calculations.
-            dxi = L_b/20;
+%%% For full-space and thin layer calculations
+            switch type
+                case 'search'
+                    dxi = L_b/80;
+                case 'wavelength'
+                    dxi = L_b/20;
+            end
     end      
 else
 
 %%% Fault length [km] and grid spacing [m] for VS.
-    FaultLength = Length_star*L_b/1e3;
+    FaultLength = Length_hat*L_b/1e3;
     dxi = 1e3*FaultLength/500;
-    BurialDepth = 1e-3*M*d_c*Burial_Star/EffStress_0;
+    BurialDepth = 1e-3*M*d_c*Burial_hat/EffStress_0;
 end
 %-------------------------------------------------------------------------%
 %-------------------------------------------------------------------------%
@@ -82,7 +87,9 @@ end
 R.StateLawDropDown.Value = 'Aging';
 R.PlotsOnCheckBox.Value = false;
     
-%%% Set geometry.
+%%% Set geometry. Use the 'Full Space' geometry for thin layer because it's faster. The
+%%% stress change functions for the thin layer geometry will be defined in
+%%% StabilityAnalysis.m.
 if strcmp(geom, 'Layer') == 1
     R.GeometryDropDown.Value = 'Thrust Fault';
 else
