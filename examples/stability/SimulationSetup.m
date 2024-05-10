@@ -87,6 +87,7 @@ if strcmp(geom, 'Layer') == 1
 else
     R.GeometryDropDown.Value = geom;
 end
+R.GeometryDropDown.ValueChangedFcn([],[]);
 
 R.FaultLengthkmEditField.Value = FaultLength;
 if strcmp(geom, 'Thrust Fault') == 1 || strcmp(geom, 'Normal Fault')
@@ -122,15 +123,15 @@ else
     R.RunTimeyrEditField.Value = 400;
 end
 
-%%% Set the properties to compute grid coordinates.
-R.SetPropertiesButton.ButtonPushedFcn([],[]);
+%%% Create the grid.
+R.CreateGridButton.ButtonPushedFcn([],[]);
 
 %%% Set import flag to true, to prevent altered parameters from being
 %%% overwritten.
 R.p.Options.Import = 1;
 
 %%% Plot the geometry.
-R.PlotGeometryButton.ButtonPushedFcn([],[]);
+R.PlotButton.ButtonPushedFcn([],[]);
 
 %%% Get parameters structure.
 p = R.p;
