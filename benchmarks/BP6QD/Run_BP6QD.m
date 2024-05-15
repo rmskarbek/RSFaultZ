@@ -18,7 +18,7 @@ mu_ref = 0.6;
 %%% Elastic parameters.
 v_shear = 3464;                         % [m/s]
 density = 2670;                         % [kg / m^3]
-Poisson = 0.25;
+Poisson = 0;
 ShearMod = v_shear^2*density/1e9;       % [GPa]
 
 %%% Fluid flow parameters.
