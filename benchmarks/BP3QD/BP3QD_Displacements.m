@@ -34,7 +34,7 @@ end
 %%% Plate rate.
 N = SimData.Params.Geometry.GridPoints;
 FaultDip = SimData.Params.Geometry.FaultDip;
-v_plate = SimData.Params.Material.PlateRate;
+v_plate = SimData.Params.InitialConditions.PlateRate;
 
 %%% Rigid body displacements.
 UX_fw = (v_plate*Time'/2)*cosd(FaultDip);

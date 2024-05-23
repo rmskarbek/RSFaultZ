@@ -8,16 +8,25 @@
 %%% doi: 10.1785/0220190248.
 
 
-%%% This script executes in ~2.5 minutes on Rob's computer: 3.7 GHz processor,
-%%% 64 GB RAM, Linux OS.
+%%% with plots on, this script executes in 3 minutes on Rob's computer: 
+%%% 3.7 GHz processor, 64 GB RAM, Linux OS.
 
 %%%---------------------------------------------------------------------%%%
 %%%---------------------------------------------------------------------%%%
 %%% Run 1: Vertical strike slip fault.
 DipAngle = 90;
 
-%%% Run the simulation
-SimData_SS90 = Run_BP1QD(DipAngle);
+%%% Set up the simulation
+R = Run_BP1QD(DipAngle);
+
+%%% Run the simulation.
+R.StartButton.ButtonPushedFcn([],[]);
+
+%%% Access the simulation output.
+SimData_SS90 = struct('Params', R.p, 'Output', R.Out);
+
+%%% Close the RSFaultZ instance.
+% delete(R);
 
 %%% Create a table of on fault data at specified locations.
 OnFaultData_SS90 = BP3QD_OnFault(SimData_SS90);

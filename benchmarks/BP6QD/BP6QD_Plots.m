@@ -10,8 +10,17 @@
 %%%--------------------------------------------------------------------------------------%%%
 %%%--------------------------------------------------------------------------------------%%%
 
-%%% Run the simulation
-SimData = Run_BP6QD;
+%%% Set upn the simulation
+R = Run_BP6QD;
+
+%%% Run the simulation.
+R.StartButton.ButtonPushedFcn([],[]);
+
+%%% Access the simulation output.
+SimData = struct('Params', R.p, 'Output', R.Out);
+
+%%% Close the RSFaultZ instance.
+% delete(R);
 
 %%% Create a table of on fault data at specified locations.
 OnFaultData = BP6QD_OnFault(SimData);

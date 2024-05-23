@@ -17,8 +17,17 @@
 geom = 'Thrust Fault';
 DipAngle = 60;
 
-%%% Run the simulation
-SimData_T60 = Run_BP3QD(geom, DipAngle);
+%%% Set upn the simulation
+R = Run_BP3QD(geom, DipAngle);
+
+%%% Run the simulation.
+R.StartButton.ButtonPushedFcn([],[]);
+
+%%% Access the simulation output.
+SimData_T60 = struct('Params', R.p, 'Output', R.Out);
+
+%%% Close the RSFaultZ instance.
+delete(R);
 
 %%% Create a table of on fault data at specified locations.
 OnFaultData_T60 = BP3QD_OnFault(SimData_T60);
@@ -34,8 +43,17 @@ OnFaultData_T60 = BP3QD_OnFault(SimData_T60);
 geom = 'Normal Fault';
 DipAngle = 30;
 
-%%% Run the simulation
-SimData_N30 = Run_BP3QD(geom, DipAngle);
+%%% Set upn the simulation
+R = Run_BP3QD(geom, DipAngle);
+
+%%% Run the simulation.
+R.StartButton.ButtonPushedFcn([],[]);
+
+%%% Access the simulation output.
+SimData_N30 = struct('Params', R.p, 'Output', R.Out);
+
+%%% Close the RSFaultZ instance.
+% delete(R);
 
 %%% Create a table of on fault data at specified locations.
 OnFaultData_N30 = BP3QD_OnFault(SimData_N30);

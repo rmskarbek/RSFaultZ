@@ -1,8 +1,11 @@
-function SimData = Run_BP6QD
+function R = Run_BP6QD
+
 %%% This script will programatically run the SCEC benchmark problem BP6QD.
 
-%-----------------------------------------------------------------------------------%
-%-----------------------------------------------------------------------------------%
+%---------------------------------------------------------------------------------------------%
+%---------------------------------------------------------------------------------------------%
+%%% Define the parameters values for the problem.
+
 %%% Geometry.
 geom = 'Full Space';
 DipAngle = 0;
@@ -44,14 +47,20 @@ RunTime = 2;                            % [years]
 
 %%% Grid spacing.
 dxi = 25;                               % [m]
-%-----------------------------------------------------------------------------------%
-%-----------------------------------------------------------------------------------%
+
+%---------------------------------------------------------------------------------------------%
+%---------------------------------------------------------------------------------------------%
+%%% Create an instance of RSFaultZ and set the parameters values and initial conditions
 
 %%% Create an instance of the app.
 R = RSFaultZ;
 
 %%% Set options.
 R.StateLawDropDown.Value = 'Aging';
+R.RunTimeyrEditField.Value = RunTime;
+
+%---------------------------------------------------------------------------------------------%
+%%% 1. Set the geometry, normal stress, elastic, friction, and fluid flow parameters.
 
 %%% Set geometry.
 R.GeometryDropDown.Value = geom;
@@ -78,9 +87,6 @@ R.PorosityEditField.Value = phi_0;
 R.FluidViscosityMPasEditField.Value = Viscosity;
 R.Compressibility1MPaEditField.Value = Compressibility;
 R.Permeabilitym2EditField.Value = Permeability;
-
-%%% Set run time.
-R.RunTimeyrEditField.Value = RunTime;
     
 %%% Set frictional parameters.
 R.aEditField.Value = a;
@@ -89,8 +95,8 @@ R.dcmEditField.Value = d_c;
 R.v0EditField.Value = v_ref;
 R.mu0EditField.Value = mu_ref;
 
-%%% Set plate rate.
-R.LoadingRatemsEditField.Value = v_plate;
+%---------------------------------------------------------------------------------------------%
+%%% 2. Create the numerical grid.
 
 %%% Set grid spacing.
 R.dximEditField.Value = dxi;
@@ -98,46 +104,54 @@ R.dximEditField.Value = dxi;
 %%% Update the Grid Controls panel.
 R.dximEditField.ValueChangedFcn([],[]);
 
-%%% Select steady state shear stress intial condition. This won't do anything since the
-%%% initial conditions are overwritten below.
-R.SteadyStateConditionButtonGroup.SelectedObject.Value = false;
-
-%%% Create the grid. The parameters structure p does not exist until CreateGridButton is
-%%% pressed. Any attempts to set values in p will be overwritten by CreateGridButtonPushed
+%%% Create the grid.
 R.CreateGridButton.ButtonPushedFcn([],[]);
 
-%%% Set import flag to 1, to prevent altered parameters from being overwritten.
-R.p.Options.Import = 1;
+%---------------------------------------------------------------------------------------------%
+%%% 3. Set the initial conditions.
 
 %%% Get fault coordinates.
 N = R.p.Geometry.GridPoints;
 Xi = R.p.Geometry.FaultCoordinates;
 
-%%% Get radiation damping term.
-eta = R.p.Material.RadiationDamping;
+%%% Set plate rate.
+R.LoadingRatemsEditField.Value = v_plate;
+
+%%% Select steady state shear stress intial condition. This won't do anything since the
+%%% initial conditions are overwritten below.
+R.SteadyStateConditionButtonGroup.SelectedObject.Value = false;
 
 %%% Initial slip velocity.
 R.InitialVelocitymsEditField.Value = v_init;
 R.RandomVariationEditField.Value = 0;
 v_i = v_init*ones(size(Xi));
 
+%%% Get radiation damping term.
+eta = R.p.Material.RadiationDamping;
+
 %%% Initial normal stress.
 sigma_i = EffStress_0.*ones(size(Xi));
-
 %%% Initial shear stress.
 tau_0 = 29.2;
 tau_i = tau_0 + eta*v_i;
-
 %%% Initial state.
 state_i = (d_c/v_ref)*exp((a./b).*log((2*v_ref./v_i)...
     .*sinh((tau_0 - eta*v_i)./(a*EffStress_0))) - mu_ref/b);
-
 %%% Initial pore pressure.
 pressure_i = zeros(N,1);
 
 %%% Set initial conditions.
 Vars_i = [v_i; tau_i; state_i; sigma_i; pressure_i];
-R.p.Geometry.InitConditions = Vars_i;
+R.p.InitialConditions.Vars_init = Vars_i;
+
+%%% Set import flag to 1, to prevent altered parameters from being overwritten.
+R.p.Options.Import = 1;
+
+%---------------------------------------------------------------------------------------------%
+%%% 5. Plotting options.
+
+%%% Turn off plots.
+% R.PlotsOnCheckBox.Value = false;
 
 %%% Plot the pore pressure
 R.PlotTypeDropDown.Value = 'Pore Pressure';
@@ -146,11 +160,13 @@ R.yminEditField.Value = -1;
 R.ymaxEditField.Value = 10;
 R.PlotButton.ButtonPushedFcn([],[]);
 
+%---------------------------------------------------------------------------------------------%
+%---------------------------------------------------------------------------------------------%
 %%% Run the simulation.
-R.StartButton.ButtonPushedFcn([],[]);
+% R.StartButton.ButtonPushedFcn([],[]);
 
 %%% Access the simulation output.
-SimData = struct('Params', R.p, 'Output', R.Out);
+% SimData = struct('Params', R.p, 'Output', R.Out);
 
 %%% Close the RSFaultZ instance.
 % delete(R);
