@@ -5,9 +5,6 @@ function [Mu, DH, DH_max, AB, AB_max, K_c, K_max] = F6_LayerVS
 %%% infinitely long, velocity-strengthening fault that is parallel to a
 %%% traction-free surface. 
 
-%%% This function will automatically generate Figure 6 in Skarbek, 2024,
-%%% JGR.
-
 %%% This function takes ~50 s to run on Rob's computer: 3.7 GHz processor,
 %%% 64 GB RAM, Linux OS.
 %%%---------------------------------------------------------------------%%%
@@ -103,7 +100,8 @@ D_min = (2./Mu).^2;
 ii = AB == 0.99999;
 AB(ii) = nan;
 figure;
-tiledlayout(1,2);
+set(gcf,'Color','w')
+tiledlayout(1, 2)%, 'Padding', 'tight');
 nexttile
 % levels = linspace(1, max(max(AB)), 12)';
 [~, C2] = contourf(repmat(DH',numel(Mu),1), repmat(Mu,1,numel(DH)), AB);
@@ -113,7 +111,6 @@ hold off
 xlim([1 1e4])
 
 C = colorbar('TickLabelInterpreter', 'latex');
-colormap(cool)
 C.Ticks = C2.LevelList;
 C.TickLabels(2:2:end) = {''};
 % C.Ticks = [1.00001, C.Ticks];
@@ -121,7 +118,7 @@ C.TickLabels(2:2:end) = {''};
 
 C.Title.String = '$(a/b)_c$';
 C.Title.Interpreter = 'latex';
-C.Title.FontSize = 24;
+C.Title.FontSize = 22;
 
 % hold on
 % plot(LH, Mu_min, 'c')
@@ -133,7 +130,9 @@ lgd = legend('', '$\mu_0 = (4 L_b / d)^{1/2}$', 'Location', 'southwest',...
 
 ax = gca;
 ax.XScale = 'log';
-ax.FontSize = 20;
+ax.XTick = [1 1e1 1e2 1e3 1e4];
+ax.YTick = (0:0.1:1);
+ax.FontSize = 24;
 ax.TickLabelInterpreter = 'latex';
 
 xlabel('Normalized Burial Depth ($d / L_b$)', 'Interpreter', 'latex')
@@ -150,16 +149,17 @@ contourf(repmat(DH',numel(Mu),1), repmat(Mu,1,numel(DH)), K_c)
 xlim([1 1e4])
 
 C = colorbar('TickLabelInterpreter', 'latex');
-colormap(cool)
 C.Ticks = [0.506, C.Ticks];
 
 C.Title.String = '$\hat{k} = k_c/d$';
 C.Title.Interpreter = 'latex';
-C.Title.FontSize = 24;
+C.Title.FontSize = 22;
 
 ax = gca;
 ax.XScale = 'log';
-ax.FontSize = 20;
+ax.XTick = [1 1e1 1e2 1e3 1e4];
+ax.YTick = (0:0.1:1);
+ax.FontSize = 24;
 ax.TickLabelInterpreter = 'latex';
 
 xlabel('Normalized Burial Depth ($d / L_b$)', 'Interpreter', 'latex')
@@ -167,3 +167,7 @@ ylabel('Friction Coefficient ($\mu_0$)', 'Interpreter', 'latex')
 
 text(0.05, 0.93, 'B', 'units', 'normalized', 'FontSize', 30, 'Interpreter',...
     'latex')
+
+%%%Pperceptually-uniform colormap using the crameri package.
+cmap = crameri('-hawaii');
+colormap(cmap);
