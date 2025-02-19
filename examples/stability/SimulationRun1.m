@@ -1,16 +1,16 @@
-function [T, P] = SimulationRun1(ab, Length_star, geom, beta, mu_0, calc,...
-    Burial_Star, EffStress_0)
+function [T, P] = SimulationRun1(ab, Length_hat, geom, beta, mu_0, calc,...
+    Burial_hat, EffStress_0)
 %%% This function is altered from StabilityRun1.m, to run full simulations.
 
 %%% Values of a/b.
 N_a = numel(ab);
 
 %%% Values of Length_star = FaultLength/h_star.
-N_L = numel(Length_star);
+N_L = numel(Length_hat);
 
 %%% Create names for the different variables.
 abNames = cell(N_a, 1);
-LstarNames = cell(N_L, 1);
+LhatNames = cell(N_L, 1);
 
 %%% Names for a/b values.
 for q = 1:N_a
@@ -19,7 +19,7 @@ end
 
 %%% Names for Length_star values.
 for q = 1:N_L
-    LstarNames{q,1} = ['Lstar_', num2str(Length_star(q))];
+    LhatNames{q,1} = ['Lhat_', num2str(Length_hat(q))];
 end
 
 %%%---------------------------------------------------------------------%%%
@@ -34,7 +34,7 @@ switch geom
 
     case {'Full Space', 'Layer'}
         rowNames = abNames;
-        columnNames = LstarNames;
+        columnNames = LhatNames;
         
         N = numel(rowNames);
         M = numel(columnNames);
@@ -71,58 +71,62 @@ for i = 1:M
         switch rowNames{1,1}(1)
             case 'a' % abNames
                 k = j;
-            case 'L' % LStarNames
+            case 'L' % LHatNames
                 q = j;
             case 'b' % betaNames
                 w = j;
             case 'm' % MuNames
                 y = j;
-            case 'B' % BStarNames
+            case 'B' % BhatNames
                 z = j;
         end
     
         switch columnNames{1,1}(1)
             case 'a' % abNames
                 k = i;
-            case 'L' % LStarNames
+            case 'L' % LHatNames
                 q = i;
             case 'b' % betaNames
                 w = i;
             case 'm' % MuNames
                 y = i;
-            case 'B' % BStarNames
+            case 'B' % BhatNames
                 z = i;
         end
 
         switch calc
             case 'length'
 
-%%% Setup RSFaultZ.
+            %%% Setup RSFaultZ.
                 if exist('R', 'var')
-                    [R, p] = SimulationSetup(ab(k), Length_star(q), beta(w),...
-                        mu_0(y), geom, Burial_Star(z), EffStress_0, R);
+                    [R, p] = SimulationSetup(ab(k), Length_hat(q), beta(w),...
+                        mu_0(y), geom, Burial_hat(z), EffStress_0, R);
                 else
-                    [R, p] = SimulationSetup(ab(k), Length_star(q), beta(w),...
-                        mu_0(y), geom, Burial_Star(z), EffStress_0);
+                    [R, p] = SimulationSetup(ab(k), Length_hat(q), beta(w),...
+                        mu_0(y), geom, Burial_hat(z), EffStress_0);
                 end
 
-%%% Alter the initial velocityconditions to control the perturbation
-%%% length. Here, only a singe node at the center of the fault is
-%%% perturbed.
+            %%% Alter the initial velocityconditions to control the perturbation
+            %%% length. Here, only a singe node at the center of the fault is
+            %%% perturbed.
                 N_g = p.Geometry.GridPoints;
                 N_p = round(N_g/2);
                 v_plate = p.Material.PlateRate;
 
                 vel_i = R.p.Geometry.InitConditions(1:N_g,1);
-                vel_i(1:N_p-1) = v_plate;
-                vel_i(N_p+1:end) = v_plate;
-                vel_i(N_p) = 0.99*v_plate;
+            %%% Perturbation at the center of the fault.
+                % vel_i(1:N_p-1) = v_plate;
+                % vel_i(N_p+1:end) = v_plate;
+                % vel_i(N_p) = 0.99*v_plate;
+            %%% Perturbation at the edge of the fault.
+                vel_i(1:end) = v_plate;
+                vel_i(end) = 0.99*v_plate;
                 R.p.Geometry.InitConditions(1:N_g,1) = vel_i;
 
-%%% Run the simulation.
+            %%% Run the simulation.
                 R.StartButton.ButtonPushedFcn([],[]);
 
-%%% Access the simulation output.
+            %%% Access the simulation output.
                 SimData = struct('p', R.p, 'Output', R.Out);
                 Time = downsample(SimData.Output.Time, 10);
                 V_max = downsample(max(SimData.Output.Vel,[],2), 10);             
@@ -137,16 +141,16 @@ for i = 1:M
                 Length_starP = 1;
                 if exist('R', 'var')
                     [R, p] = StabilitySetup(ab(k), Length_starP, beta(w),...
-                        mu_0(y), geom, Burial_Star(z), R);
+                        mu_0(y), geom, Burial_hat(z), R);
                 else
                     [R, p] = StabilitySetup(ab(k), Length_starP, beta(w),...
-                        mu_0(y), geom, Burial_Star(z));
+                        mu_0(y), geom, Burial_hat(z));
                 end
  
 %%% Alter the initial state variable conditions to control the perturbation
 %%% length.
                 N_g = p.Geometry.GridPoints;
-                N_p = round(Length_star(q)*N_g);
+                N_p = round(Length_hat(q)*N_g);
                 N_steady = round((N_g - N_p)/2);                
                 v_plate = p.Material.PlateRate;
 

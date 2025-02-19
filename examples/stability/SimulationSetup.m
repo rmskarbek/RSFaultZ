@@ -1,5 +1,5 @@
-function [R, p] = SimulationSetup(ab, Length_star, beta, mu_ref, geom,...
-    Burial_Star, EffStress_0, varargin)
+function [R, p] = SimulationSetup(ab, Length_hat, beta, mu_ref, geom,...
+    Burial_hat, EffStress_0, varargin)
 
 %%% This function creates an instance of RSFaultZ, or alters an already
 %%% existing instance, and sets parameters for full space simulations for
@@ -34,7 +34,7 @@ L_b = d_c*M/(b*EffStress_0);
 %%% For thin layer geometry, the length scales are modified.
 switch geom
     case 'Layer'
-        d = Burial_Star*L_b;
+        d = Burial_hat*L_b;
         H_s = (8*pi*d*H_s).^(1/2);
         L_b = (2*d*L_b).^(1/2);
 end
@@ -43,7 +43,7 @@ end
 if a - b < 0
 
 %%% Fault length [km] and grid spacing [m] for VW.
-    FaultLength = Length_star*H_s/1e3;
+    FaultLength = Length_hat*H_s/1e3;
 
     switch geom
         case {'Thrust Fault', 'Normal Fault'}
@@ -53,17 +53,18 @@ if a - b < 0
 
         case {'Full Space', 'Layer'}
 %%% For full-space and thin layer calculations.
-            dxi = L_b/20;
+            dxi = L_b/80;
+            % dxi = 1e3*FaultLength/250;
     end
 
     %%% Units might be wrong here.
-    BurialDepth = Burial_Star*H_s/1e3;
+    BurialDepth = Burial_hat*H_s/1e3;
 else
 
 %%% Fault length [km] and grid spacing [m] for VS.
-    FaultLength = Length_star*L_b/1e3;
+    FaultLength = Length_hat*L_b/1e3;
     dxi = 1e3*FaultLength/500;
-    BurialDepth = 1e-3*M*d_c*Burial_Star/EffStress_0;
+    BurialDepth = 1e-3*M*d_c*Burial_hat/EffStress_0;
 end
 %-------------------------------------------------------------------------%
 %-------------------------------------------------------------------------%
@@ -115,12 +116,35 @@ R.dximEditField.Value = dxi;
 %%% Update the Grid Controls panel.
 R.dximEditField.ValueChangedFcn([],[]);
 
-%%% Set run time.
-if Length_star <= 0.4
-    R.RunTimeyrEditField.Value = 2000;
-else
-    R.RunTimeyrEditField.Value = 400;
+%%% Set the run time. Depending on parameters, different run times are required to achieve a 
+%%% stable limit cycle.
+if ab == 0.1
+    R.RunTimeyrEditField.Value = 200;
+    
+elseif ab == 0.3
+    if Length_hat == 0.3725
+        R.RunTimeyrEditField.Value = 600;
+    else
+        R.RunTimeyrEditField.Value = 200;
+    end
+
+elseif ab == 0.5
+    if Length_hat == 0.375
+        R.RunTimeyrEditField.Value = 900;    
+    else
+        R.RunTimeyrEditField.Value = 300;
+    end
+
+elseif ab == 0.7
+    if Length_hat == 0.3725
+        R.RunTimeyrEditField.Value = 2500;
+    else
+        R.RunTimeyrEditField.Value = 1200;
+    end
 end
+
+%%% Increase run time when the perturbation is on the edge of the fault.
+R.RunTimeyrEditField.Value = 1.5*R.RunTimeyrEditField.Value;
 
 %%% Set the properties to compute grid coordinates.
 R.SetPropertiesButton.ButtonPushedFcn([],[]);

@@ -50,9 +50,15 @@ if a - b < 0
 
     switch geom
         case {'Thrust Fault', 'Normal Fault'}
-%%% For dipping critical fault length, make sure there are at least 250
-%%% grid points.
-            dxi = 1e3*FaultLength/250;
+    %%% For dipping critical fault length, make sure there are at least 250
+    %%% grid points.        
+            dxi1 = L_b/80;
+            dxi2 = 1e3*FaultLength/250;
+            if dxi2 < dxi1
+                dxi = dxi2;
+            else
+                dxi = dxi1;
+            end
             BurialDepth = Burial_hat*H_s/1e3;  % [km]
 
         case {'Full Space', 'Layer'}
