@@ -24,7 +24,7 @@
 %%%     2b. StabilityAnalysis.m: Executes the numerical stability analysis
 %%%     using the parameters structure that is created by StabilitySetup.m
 
-%%% 3. Generates Figure 2 in Skarbek, 2024 JGR.
+%%% 3. Generates Figure 2 in Skarbek, 2025 GJI.
 
 %%%---------------------------------------------------------------------%%%
 
@@ -194,4 +194,4 @@ text(nexttile(2), 0.9, 0.95, 'B', 'units', 'normalized', 'FontSize', 30,...
     'Interpreter', 'latex')
 
 %%% Export an .eps file of the figure
-export_fig Figure2.eps
+% export_fig Figure2.eps
