@@ -8,8 +8,8 @@
 %%% Aseismic Slip (SEAS), Bull. Seismol. Soc. Am. 113, 499–523, 
 %%% doi: 10.1785/0120220066.
 
-%%% This script executes in ~9 minutes on Rob's computer: 3.7 GHz processor,
-%%% 64 GB RAM, Linux OS.
+%%% This script executes in ~7.5 minutes on Rob's computer: MATLAB 2025a,
+%%%  3.7 GHz processor, 64 GB RAM, Linux OS.
 
 %%%---------------------------------------------------------------------%%%
 %%%---------------------------------------------------------------------%%%
@@ -17,7 +17,7 @@
 geom = 'Thrust Fault';
 DipAngle = 60;
 
-%%% Set upn the simulation
+%%% Set up the simulation
 R = Run_BP3QD(geom, DipAngle);
 
 %%% Run the simulation.
@@ -43,7 +43,7 @@ OnFaultData_T60 = BP3QD_OnFault(SimData_T60);
 geom = 'Normal Fault';
 DipAngle = 30;
 
-%%% Set upn the simulation
+%%% Set up the simulation
 R = Run_BP3QD(geom, DipAngle);
 
 %%% Run the simulation.
@@ -81,7 +81,7 @@ tiledlayout(2,2);
 %%% Shear stress for thrust fault.
 nexttile;
 plot(OnFaultData_T60.fltst_dp75.Time_s/spy,...
-    OnFaultData_T60.fltst_dp75.ShearStress_MPa, 'k', 'LineWidth', 2)
+    OnFaultData_T60.fltst_dp75.ShearStress_MPa, 'w', 'LineWidth', 2)
 hold on
 plot(C_075_T60.t/spy, C_075_T60.shear_stress, 'm--', 'LineWidth', 2);
 hold off
@@ -96,7 +96,7 @@ l = legend('RSFaultZ', 'FDRA', 'Location', 'northwest');
 %%% Slip rate for thrust fault.
 nexttile
 plot(OnFaultData_T60.fltst_dp75.Time_s/spy,...
-    OnFaultData_T60.fltst_dp75.SlipRate_log10ms, 'k', 'LineWidth', 2)
+    OnFaultData_T60.fltst_dp75.SlipRate_log10ms, 'w', 'LineWidth', 2)
 hold on
 plot(C_075_T60.t/spy, C_075_T60.slip_rate, 'm--', 'LineWidth', 2);
 hold off
@@ -109,7 +109,7 @@ title('60\circ thrust')
 %%% Shear stress for normal fault.
 nexttile;
 plot(OnFaultData_N30.fltst_dp75.Time_s/spy,...
-    -OnFaultData_N30.fltst_dp75.ShearStress_MPa, 'k', 'LineWidth', 2)
+    -OnFaultData_N30.fltst_dp75.ShearStress_MPa, 'w', 'LineWidth', 2)
 hold on
 plot(C_075_N30.t/spy, C_075_N30.shear_stress, 'm--', 'LineWidth', 2);
 hold off
@@ -123,7 +123,7 @@ title('30\circ normal')
 %%% Slip rate for normal fault.
 nexttile
 plot(OnFaultData_N30.fltst_dp75.Time_s/spy,...
-    OnFaultData_N30.fltst_dp75.SlipRate_log10ms, 'k', 'LineWidth', 2)
+    OnFaultData_N30.fltst_dp75.SlipRate_log10ms, 'w', 'LineWidth', 2)
 hold on
 plot(C_075_N30.t/spy, C_075_N30.slip_rate, 'm--', 'LineWidth', 2);
 hold off
@@ -161,11 +161,11 @@ tiledlayout(2,2);
 
 %%% Thrust fault horizontal displacements.
 nexttile
-plot(Time_T60/spy, T_UX_T60.p_16km, 'k', 'LineWidth', 2)
+plot(Time_T60/spy, T_UX_T60.p_16km, 'w', 'LineWidth', 2)
 hold on
-plot(Time_T60/spy, T_UX_T60{:,5}, 'k', 'LineWidth', 2)
-plot(Time_T60/spy, T_UX_T60{:,6}, 'k', 'LineWidth', 2)
-plot(Time_T60/spy, T_UX_T60.n_16km, 'k', 'LineWidth', 2)
+plot(Time_T60/spy, T_UX_T60{:,5}, 'w', 'LineWidth', 2)
+plot(Time_T60/spy, T_UX_T60{:,6}, 'w', 'LineWidth', 2)
+plot(Time_T60/spy, T_UX_T60.n_16km, 'w', 'LineWidth', 2)
 
 plot(C_p16_T60.t/spy, C_p16_T60.disp_1, 'm--', 'LineWidth', 2)
 plot(C_n16_T60.t/spy, C_n16_T60.disp_1, 'm--', 'LineWidth', 2)
@@ -185,11 +185,11 @@ l = legend('RSFaultZ', '', '', '', 'FDRA', 'Location', 'northwest');
 
 %%% Normal fault horizontal displacements.
 nexttile
-plot(Time_N30/spy, T_UX_N30.p_16km, 'k', 'LineWidth', 2)
+plot(Time_N30/spy, T_UX_N30.p_16km, 'w', 'LineWidth', 2)
 hold on
-plot(Time_N30/spy, T_UX_N30{:,5}, 'k', 'LineWidth', 2)
-plot(Time_N30/spy, T_UX_N30{:,6}, 'k', 'LineWidth', 2)
-plot(Time_N30/spy, T_UX_N30.n_16km, 'k', 'LineWidth', 2)
+plot(Time_N30/spy, T_UX_N30{:,5}, 'w', 'LineWidth', 2)
+plot(Time_N30/spy, T_UX_N30{:,6}, 'w', 'LineWidth', 2)
+plot(Time_N30/spy, T_UX_N30.n_16km, 'w', 'LineWidth', 2)
 
 plot(C_p16_N30.t/spy, C_p16_N30.disp_1, 'm--', 'LineWidth', 2)
 plot(C_n16_N30.t/spy, C_n16_N30.disp_1, 'm--', 'LineWidth', 2)
@@ -205,11 +205,11 @@ ax.YTick = -10:2:10;
 
 %%% Thrust fault vertical displacements.
 nexttile
-plot(Time_T60/spy, T_UY_T60.p_16km, 'k', 'LineWidth', 2)
+plot(Time_T60/spy, T_UY_T60.p_16km, 'w', 'LineWidth', 2)
 hold on
-plot(Time_T60/spy, T_UY_T60{:,5}, 'k', 'LineWidth', 2)
-plot(Time_T60/spy, T_UY_T60{:,6}, 'k', 'LineWidth', 2)
-plot(Time_T60/spy, T_UY_T60.n_16km, 'k', 'LineWidth', 2)
+plot(Time_T60/spy, T_UY_T60{:,5}, 'w', 'LineWidth', 2)
+plot(Time_T60/spy, T_UY_T60{:,6}, 'w', 'LineWidth', 2)
+plot(Time_T60/spy, T_UY_T60.n_16km, 'w', 'LineWidth', 2)
 
 plot(C_p16_T60.t/spy, C_p16_T60.disp_2, 'm--','LineWidth', 2)
 plot(C_n16_T60.t/spy, C_n16_T60.disp_2, 'm--','LineWidth', 2)
@@ -227,11 +227,11 @@ ax.YTick = -10:2:10;
 
 %%% Normal fault vertical displacements.
 nexttile
-plot(Time_N30/spy, T_UY_N30.p_16km, 'k', 'LineWidth', 2)
+plot(Time_N30/spy, T_UY_N30.p_16km, 'w', 'LineWidth', 2)
 hold on
-plot(Time_N30/spy, T_UY_N30{:,5}, 'k', 'LineWidth', 2)
-plot(Time_N30/spy, T_UY_N30{:,6}, 'k', 'LineWidth', 2)
-plot(Time_N30/spy, T_UY_N30.n_16km, 'k', 'LineWidth', 2)
+plot(Time_N30/spy, T_UY_N30{:,5}, 'w', 'LineWidth', 2)
+plot(Time_N30/spy, T_UY_N30{:,6}, 'w', 'LineWidth', 2)
+plot(Time_N30/spy, T_UY_N30.n_16km, 'w', 'LineWidth', 2)
 
 plot(C_p16_N30.t/spy, C_p16_N30.disp_2, 'm--', 'LineWidth', 2)
 plot(C_n16_N30.t/spy, C_n16_N30.disp_2, 'm--', 'LineWidth', 2)

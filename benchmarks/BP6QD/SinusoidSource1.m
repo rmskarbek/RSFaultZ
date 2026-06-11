@@ -5,8 +5,14 @@ function SourceFunction = SinusoidSource1(Xi)
 %%%--------------------------------------------------------------------------------------%%%
 %%%--------------------------------------------------------------------------------------%%%
 %%% Flow flow parameters from BP6.
-    PeriodSource = 24*3600*100;          % [s]
-    AmplitudeSource = 10;               % [MPa]
+    % spd = 24*3600;
+    % PeriodDays = 365.25;    
+    % PeriodSource = spd*PeriodDays;        % [s]
+
+    spy = 365.25*24*3600;
+    PeriodYears = 1;
+    PeriodSource = spy*PeriodYears;        % [s]
+    AmplitudeSource = 0.0217/2;             % [MPa]
 
 %%% Apply the same amplitude to the entire fault.
     AmplitudeSource = AmplitudeSource*ones(numel(Xi),1);

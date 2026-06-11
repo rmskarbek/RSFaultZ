@@ -43,6 +43,7 @@ switch geometry
         K_n = 0;
 
     case 'layer'
+    %%% This scaling accounts for the relationship between L_b and L_bh.  
         BurialDepth = p.Geometry.BurialDepth;
         D2 = full(three_point_centered_uni_D2(Xi(1), Xi(N), N));
         D2(1,2) = 1/dxi^2;
@@ -162,12 +163,6 @@ switch calc
             Out_S = struct('Case', geometry, 'EigenValue', lambda,...
                 'Stability', 1);
         end
-end
-
-%%% Full space shear stress operator.
-function K = FullSpace(i, j, xi)
-    dxi = mean(diff(xi));
-    K = 1./(xi(j) - dxi/2 - xi(i)') - 1./(xi(j) + dxi/2 - xi(i)');
 end
 
 %%% Assign a phase angle to locations on the fault. 

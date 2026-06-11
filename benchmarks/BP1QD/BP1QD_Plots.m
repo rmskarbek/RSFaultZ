@@ -40,7 +40,8 @@ spy = 365.25*24*3600;
 %%% On fault data from FDRA at 7.5 km.
 C_075_SS90= readtable('Jiang_fltst_dp075_SS90.txt');
 
-figure;
+f = figure;
+theme(f, "light")
 tiledlayout(1,2);
 
 %%% Shear stress.

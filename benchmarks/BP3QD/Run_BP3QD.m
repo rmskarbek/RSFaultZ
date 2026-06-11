@@ -139,7 +139,7 @@ R.p.Options.Import = 1;
 %%% 5. Plotting options.
 
 %%% Turn off plots.
-% R.PlotsOnCheckBox.Value = false;
+R.PlotsOnCheckBox.Value = false;
 
 %%% Plot the geometry.
 % R.PlotTypeDropDown.Value = 'Geometry';
